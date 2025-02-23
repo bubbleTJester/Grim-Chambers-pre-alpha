@@ -675,7 +675,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a7f611bcc708ce42aee8c71b780ad74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  doorAnim: {fileID: 0}
+  doorAnim: {fileID: 1856486972998765415}
   areaToSpawn: {fileID: 0}
 --- !u!65 &3297025556764930827
 BoxCollider:
@@ -692,7 +692,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
