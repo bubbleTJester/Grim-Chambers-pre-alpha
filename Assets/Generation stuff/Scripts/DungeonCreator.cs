@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class DungeonCreator : MonoBehaviour
@@ -21,6 +22,8 @@ public class DungeonCreator : MonoBehaviour
     List<Vector3Int> possibleDoorHorizontalPosition;
     List<Vector3Int> possibleWallHorizontalPosition;
     List<Vector3Int> possibleWallVerticalPosition;
+
+    [SerializeField] NavMeshBaker Baker;
     // Start is called before the first frame update
     void Start()
     {
@@ -49,6 +52,7 @@ public class DungeonCreator : MonoBehaviour
             CreateMesh(listOfRooms[i].BottomLeftAreaCorner, listOfRooms[i].TopRightAreaCorner);
         }
         CreateWalls(wallParent);
+        Baker.Bake();
     }
 
     private void CreateWalls(GameObject wallParent)
@@ -111,6 +115,7 @@ public class DungeonCreator : MonoBehaviour
         dungeonFloor.GetComponent<MeshRenderer>().material = material;
         dungeonFloor.transform.parent = transform;
         dungeonFloor.AddComponent<MeshCollider>();
+        // dungeonFloor.AddComponent<NavMeshSurface>();
 
         for (int row = (int)bottomLeftV.x; row < (int)bottomRightV.x; row++)
         {

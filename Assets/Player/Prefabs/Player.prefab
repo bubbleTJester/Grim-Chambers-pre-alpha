@@ -186,7 +186,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3740880891773339972}
   - component: {fileID: 7753950419070117076}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -280,7 +280,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8954561125701802410}
   - component: {fileID: 3440374565119778510}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Spot Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -377,7 +377,7 @@ GameObject:
   - component: {fileID: 2439062570042947703}
   - component: {fileID: 6971678957920543681}
   - component: {fileID: 8433624490921824732}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -484,7 +484,7 @@ GameObject:
   - component: {fileID: 3841173288674461947}
   - component: {fileID: 5392034229443833810}
   - component: {fileID: 9189118240424521601}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -598,7 +598,7 @@ GameObject:
   - component: {fileID: 7333876083054034606}
   - component: {fileID: 5464026191331971600}
   - component: {fileID: 5590644929798306979}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
