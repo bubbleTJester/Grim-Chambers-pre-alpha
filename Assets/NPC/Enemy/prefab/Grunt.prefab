@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 3452446569245379472}
   - component: {fileID: 6741197704663030550}
   m_Layer: 7
-  m_Name: EnemyWAggro
+  m_Name: Grunt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -245,19 +245,16 @@ MonoBehaviour:
     m_Bits: 1024
   health: 2
   walkPoint: {x: 0, y: 0, z: 0}
-  walkPointRange: 50
+  walkPointRange: 10
   timeout: 1000
   timeBetweenAttacks: 2
-  projectile: {fileID: 0}
+  damage: 5
   shotPoint: {fileID: 8588572933127380623}
   sightRange: 9.9
-  attackRange: 1.5
+  attackRange: 3.95
   playerInSightRange: 0
   playerInAttackRange: 0
   gunHitEffect: {fileID: 4647476182134331008, guid: d1c3c181e678c494eb25e1097d07199b, type: 3}
   manager: {fileID: 0}
   movement: 1
-  distanceFromPlayer: 30
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 1024
+  distanceFromPlayer: 80

@@ -71,7 +71,6 @@ MonoBehaviour:
   verticalRange: 20
   gunDamage: 2
   fireRate: 1
-  gunShotRadius: 20
   enemyLayerMask:
     serializedVersion: 2
     m_Bits: 128
@@ -377,6 +376,7 @@ GameObject:
   - component: {fileID: 2439062570042947703}
   - component: {fileID: 6971678957920543681}
   - component: {fileID: 8433624490921824732}
+  - component: {fileID: 6536059742211984887}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -472,6 +472,29 @@ MonoBehaviour:
   maxHealth: 100
   maxArmour: 100
   isDead: 0
+--- !u!136 &6536059742211984887
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5903018193396889602}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.55077654
+  m_Height: 1.9841521
+  m_Direction: 1
+  m_Center: {x: 0.02, y: 0.004205823, z: 0.05077648}
 --- !u!1 &7873754478320919289
 GameObject:
   m_ObjectHideFlags: 0

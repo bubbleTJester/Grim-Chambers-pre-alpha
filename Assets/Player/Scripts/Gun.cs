@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
+    [Header("Gun Stats")]
     [SerializeField] float range;
     [SerializeField] float verticalRange;
     [SerializeField] float gunDamage;
     [SerializeField] float fireRate;
 
-    [SerializeField] float gunShotRadius;
+    // [SerializeField] float gunShotRadius;
     [SerializeField] LayerMask enemyLayerMask;
 
     private float nextTimeToFire;
@@ -47,13 +48,13 @@ public class Gun : MonoBehaviour
         GetComponent<AudioSource>().Play();
 
 
-        // simulate gunshot radius
-        Collider[] enemyColliders;
-        enemyColliders = Physics.OverlapSphere(transform.position, gunShotRadius, enemyLayerMask);
-        foreach (var enemyCollider in enemyColliders)
-        {
-            enemyCollider.GetComponent<EnemyAwareness>().isAggro = true;
-        }
+        // simulate gunshot radius | revisit another time
+        //Collider[] enemyColliders;
+        //enemyColliders = Physics.OverlapSphere(transform.position, gunShotRadius, enemyLayerMask);
+        //foreach (var enemyCollider in enemyColliders)
+        //{
+        //    enemyCollider.GetComponent<EnemyAwareness>().isAggro = true;
+        //}
 
 
         // damage enemies
@@ -107,7 +108,7 @@ public class Gun : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         // add potential enemy
-        enemy enemy = other.transform.GetComponent<enemy>();
+        EnemyBehavior enemy = other.transform.GetComponent<EnemyBehavior>();
         if (enemy)
         {
             enemyManager.AddEnemy(enemy);
@@ -117,7 +118,7 @@ public class Gun : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         // remove potential enemy
-        enemy enemy = other.transform.GetComponent<enemy>();
+        EnemyBehavior enemy = other.transform.GetComponent<EnemyBehavior>();
         if (enemy)
         {
             enemyManager.RemoveEnemy(enemy);
