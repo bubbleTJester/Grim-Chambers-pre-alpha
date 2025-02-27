@@ -5,12 +5,10 @@ using UnityEngine.AI;
 
 public class EnemyBehavior : MonoBehaviour // this code was made by me (B005561236) for an old portfolio project, I have given full permission for its use by others
 {
+    public float SpawnChance; // there's probably a better solution to choosing the chance for each enemy to spawn like having a class system, but this will do
     public NavMeshAgent agent;
-
     public GameObject player;
-
     public LayerMask whatIsGround, whatIsPlayer;
-
     public float health;
 
 

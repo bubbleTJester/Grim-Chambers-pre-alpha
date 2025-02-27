@@ -235,6 +235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48495cd84d589d54a90c080d5a32603c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SpawnChance: 20
   agent: {fileID: 7232241043442226162}
   player: {fileID: 0}
   whatIsGround:

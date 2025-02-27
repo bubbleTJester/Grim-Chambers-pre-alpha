@@ -9,19 +9,18 @@ using Random = UnityEngine.Random;
 public class EnemySpawner : MonoBehaviour
 {
     [Header("Make sure to add these before starting")]
-    [SerializeField] GameObject[] enemyPrefab;
-    [SerializeField] Transform playerTransform;
+    [SerializeField] private List<GameObject> spawns = new(); // worth saying the distribution breaks if the enemies aren't ordered from smallest chance to spawn to largest
+    [SerializeField] Transform playerTransform; // double check later if this is still needed
 
     [Header("Spawn Rate Management")]
     [SerializeField] float spawnChance;
     [SerializeField] float distanceBetweenChecks;
+    // [SerializeField] List<float> enemyChance = new();
 
     [Header("Raycasting stuff to keep them on stable ground")]
     [SerializeField] float heightOfCheck = 10f, rangeOfCheck = 30f;
     [SerializeField] LayerMask layerMask;
     [SerializeField] Vector2 positivePosition, negativePosition;
-
-
     public void SpawnEnemy()
     {
         for(float x = negativePosition.x; x < positivePosition.x; x += distanceBetweenChecks)
@@ -33,11 +32,25 @@ public class EnemySpawner : MonoBehaviour
                 {
                     if (spawnChance > Random.Range(0, 101))
                     {
-                        Instantiate(enemyPrefab[Random.Range(0, enemyPrefab.Length)], hit.point, Quaternion.Euler(new Vector3(0, Random.Range(0, 360), 0)), transform);
+                        Instantiate(EnemyCalculator(), hit.point, Quaternion.Euler(new Vector3(0, Random.Range(0, 360), 0)), transform); 
+
                     }
                     
                 }
             }
         }
+    }
+
+    private GameObject EnemyCalculator()
+    {
+        float numberGenerator = Random.Range(1, 100); // keeping this seperate to stop my head hurting from all these nested "for" and "if" statements
+        for (int i = 0; i < spawns.Count; i++)
+        {
+            if(numberGenerator <= spawns[i].GetComponent<EnemyBehavior>().SpawnChance) // doing this every time is innefficient, set up an on start to do this only once
+            {
+                return spawns[i];
+            }
+        }
+        return spawns[0]; // this is just exception handling, it'll spawn a grunt if this doesn't cover
     }
 }

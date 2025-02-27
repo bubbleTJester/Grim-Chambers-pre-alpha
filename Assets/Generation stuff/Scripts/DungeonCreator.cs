@@ -24,6 +24,7 @@ public class DungeonCreator : MonoBehaviour
     List<Vector3Int> possibleWallVerticalPosition;
 
     [SerializeField] NavMeshBaker Baker;
+    [SerializeField] EndLevelLocator endLevelLocator;
     // Start is called before the first frame update
     void Start()
     {
@@ -52,6 +53,7 @@ public class DungeonCreator : MonoBehaviour
             CreateMesh(listOfRooms[i].BottomLeftAreaCorner, listOfRooms[i].TopRightAreaCorner);
         }
         CreateWalls(wallParent);
+        endLevelLocator.CreateEnd();
         Baker.Bake();
     }
 
@@ -115,7 +117,6 @@ public class DungeonCreator : MonoBehaviour
         dungeonFloor.GetComponent<MeshRenderer>().material = material;
         dungeonFloor.transform.parent = transform;
         dungeonFloor.AddComponent<MeshCollider>();
-        // dungeonFloor.AddComponent<NavMeshSurface>();
 
         for (int row = (int)bottomLeftV.x; row < (int)bottomRightV.x; row++)
         {
@@ -137,6 +138,8 @@ public class DungeonCreator : MonoBehaviour
             var wallPosition = new Vector3(bottomRightV.x, 0, col);
             AddWallPositionToList(wallPosition, possibleWallVerticalPosition, possibleDoorVerticalPosition);
         }
+
+        endLevelLocator.StoreFloor(dungeonFloor, bottomLeftCorner, topRightCorner);
     }
 
     private void AddWallPositionToList(Vector3 wallPosition, List<Vector3Int> wallList, List<Vector3Int> doorList)
