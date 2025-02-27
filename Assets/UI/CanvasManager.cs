@@ -42,7 +42,15 @@ public class CanvasManager : MonoBehaviour
     }
     public void UpdateAmmo(int value)
     {
-        ammo.text = value.ToString();
+        if (value <= 0)
+        {
+            ammo.text = "MELEE";
+        }
+        else
+        {
+            ammo.text = value.ToString();
+        }
+        
     }
     public void UpdateHealthIndicator(int value) // makes that iconic doom face
     {

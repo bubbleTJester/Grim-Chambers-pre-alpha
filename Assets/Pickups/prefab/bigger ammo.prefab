@@ -108,7 +108,7 @@ GameObject:
   - component: {fileID: 3087336176219047718}
   - component: {fileID: 7198491620897553143}
   m_Layer: 2
-  m_Name: ammo
+  m_Name: bigger ammo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -166,4 +166,4 @@ MonoBehaviour:
   isHealth: 0
   isArmour: 0
   isAmmo: 1
-  amount: 8
+  amount: 16

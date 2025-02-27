@@ -4,9 +4,13 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
+    [SerializeField] GameObject ammoPickup;
+
+
     [Header("Gun Stats")]
     [SerializeField] float range;
     [SerializeField] float verticalRange;
+    [SerializeField] float meleeRange;
     [SerializeField] float gunDamage;
     [SerializeField] float fireRate;
 
@@ -28,8 +32,7 @@ public class Gun : MonoBehaviour
         ammo = maxAmmo / 2;
 
         gunTrigger = GetComponent<BoxCollider>();
-        gunTrigger.size = new Vector3(1, verticalRange, range);
-        gunTrigger.center = new Vector3(0, 0, range / 2);
+       
         CanvasManager.Instance.UpdateAmmo(ammo);
     }
 
@@ -44,8 +47,33 @@ public class Gun : MonoBehaviour
     void Fire() // the goal was to create a doom-like gun that ignores altitude while still taking walls into consideration
     {
         // Gun Audio
-        GetComponent<AudioSource>().pitch = Random.Range(0.75f, 1.25f);
-        GetComponent<AudioSource>().Play();
+        
+        if(ammo <= 0)
+        {
+            gunTrigger.size = new Vector3(2, verticalRange, meleeRange);
+            gunTrigger.center = new Vector3(0, 0, meleeRange / 2);
+        }
+        else
+        {
+            GetComponent<AudioSource>().pitch = Random.Range(0.75f, 1.25f);
+            GetComponent<AudioSource>().Play();
+
+            gunTrigger.size = new Vector3(1, verticalRange, range);
+            gunTrigger.center = new Vector3(0, 0, range / 2);
+            // ammo counter
+            ammo -= 2;
+            CanvasManager.Instance.UpdateAmmo(ammo);
+
+            // reset Timer
+            nextTimeToFire = Time.time + fireRate;
+        }
+
+        // damage enemies
+        // This is to avoid returning null when firing at thin air. Don't know if It'd break anything, but I don't plan on finding out either
+        if (enemyManager.enemiesInTrigger.Count > 0) 
+        {
+            DamageEnemies();
+        }
 
 
         // simulate gunshot radius | revisit another time
@@ -56,9 +84,11 @@ public class Gun : MonoBehaviour
         //    enemyCollider.GetComponent<EnemyAwareness>().isAggro = true;
         //}
 
+    }
 
-        // damage enemies
-        foreach(var enemy in enemyManager.enemiesInTrigger)
+    private void DamageEnemies()
+    {
+        foreach (var enemy in enemyManager.enemiesInTrigger)
         {
             // get direction to enemy
             var dir = enemy.transform.position - transform.position;
@@ -73,22 +103,17 @@ public class Gun : MonoBehaviour
                     // range check || change later to be more dynamic e.g. after a set range reduce the damage over distance rather than just half straight away
                     float dist = Vector3.Distance(enemy.transform.position, transform.position);
 
-                    if (dist > range / 2) { enemy.TakeDamage(gunDamage/2); }
-                    else {enemy.TakeDamage(gunDamage);}
+                    if (dist > range / 2) { enemy.TakeDamage(gunDamage / 2); }
+                    else { enemy.TakeDamage(gunDamage); }
 
-                    
-
-                    
+                    if (ammo <= 0)
+                    {
+                        Instantiate(ammoPickup, enemy.transform.position, Quaternion.identity);
+                    }
                 }
             }
-            
-        }
-        // reset Timer
-        nextTimeToFire = Time.time + fireRate;
 
-        // ammo counter
-        ammo -= 2;
-        CanvasManager.Instance.UpdateAmmo(ammo);
+        }
     }
 
     public void GiveAmmo(int amount, GameObject pickup)
