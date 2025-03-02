@@ -46,9 +46,11 @@ public class Gun : MonoBehaviour
     }
     void Fire() // the goal was to create a doom-like gun that ignores altitude while still taking walls into consideration
     {
+        StatisticManager.ShotFired();
+
         // Gun Audio
-        
-        if(ammo <= 0)
+
+        if (ammo <= 0)
         {
             gunTrigger.size = new Vector3(2, verticalRange, meleeRange);
             gunTrigger.center = new Vector3(0, 0, meleeRange / 2);
@@ -88,6 +90,7 @@ public class Gun : MonoBehaviour
 
     private void DamageEnemies()
     {
+        
         foreach (var enemy in enemyManager.enemiesInTrigger)
         {
             // get direction to enemy

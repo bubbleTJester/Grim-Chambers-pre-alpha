@@ -14,6 +14,13 @@ public class EnemyManager : MonoBehaviour
     }
     public void RemoveEnemy(EnemyBehavior enemy)
     {
+        foreach(var enem in enemiesInTrigger) // weird bug caused enemies bundled together to get nulled out but not removed, this should fix it
+        {
+            if(enem == null)
+            {
+                enemiesInTrigger.Remove(enem);
+            }
+        }
         enemiesInTrigger.Remove(enemy);
     }
 }

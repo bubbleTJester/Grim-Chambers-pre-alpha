@@ -1,14 +1,18 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class CanvasManager : MonoBehaviour
 {
     public TextMeshProUGUI health;
     public TextMeshProUGUI armour;
     public TextMeshProUGUI ammo;
+    public TextMeshProUGUI timer;
+    public TextMeshProUGUI timeAdd;
 
     public Image healthIndicator;
+    public GameObject blood;
 
     public Sprite health1; // Full
     public Sprite health2; // Half
@@ -70,5 +74,24 @@ public class CanvasManager : MonoBehaviour
     public void DoorIndicator(bool passed) 
     {
         doorCheck.SetActive(passed);
+    }
+
+    internal void UpdateTime(float currentTime, bool timeAdded, float addition)
+    {
+        
+        timer.text = (Math.Round(currentTime, 2)).ToString();
+
+        if (timeAdded)
+        {
+            TextMeshProUGUI text = Instantiate(timeAdd, timeAdd.transform.position, transform.rotation);
+            text.transform.SetParent(gameObject.transform, false);
+            text.text = ("+" + addition.ToString() + "s");
+
+        }
+    }
+
+    internal void Death()
+    {
+        blood.SetActive(true);
     }
 }

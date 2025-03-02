@@ -59,6 +59,14 @@ public class PlayerMovement : MonoBehaviour
     }
     void MovePlayer()
     {
-        charaCont.Move(movementVector * Time.deltaTime);
+        if (Input.GetAxisRaw("Fire3") != 0)
+        {
+            charaCont.Move((movementVector*1.5f) * Time.deltaTime);
+        }
+        else
+        {
+            charaCont.Move(movementVector * Time.deltaTime);
+        }
+        
     }
 }

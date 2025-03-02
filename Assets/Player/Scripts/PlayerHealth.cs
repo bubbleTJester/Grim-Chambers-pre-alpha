@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
+    [SerializeField] PlayerMovement playerMovement;
+    [SerializeField] TimerManager timerManager;
+    [SerializeField] MouseLook mouseLook;
+    [SerializeField] Animator animator;
+
     [SerializeField] int maxHealth;
     private int health;
 
@@ -27,11 +32,18 @@ public class PlayerHealth : MonoBehaviour
             DamagePlayer(20);
         }
         
+        if (isDead)
+        {
+            KillPlayer();
+            StartCoroutine(Coroutine());
             
-
-        
-
-        
+            
+        }   
+    }
+    IEnumerator Coroutine()
+    {
+        yield return new WaitForSeconds(3f);
+        StatisticManager.GameEnd(timerManager.currentTime);
     }
     public void DamagePlayer(int damage)
     {
@@ -54,15 +66,20 @@ public class PlayerHealth : MonoBehaviour
         else
         {
             health -= damage;
+
         }
 
-        if (health <= 0) // add death logic later
+        if (health <= 0)
         {
             isDead = true;
         }
+        if (health < 0)
+        {
+            health = 0;
+        }
         CanvasManager.Instance.UpdateHealth(health);
         CanvasManager.Instance.UpdateArmour(armour);
-
+        StatisticManager.TotalDamageTaken += damage;
     }
     public void GiveHealth(int amount, GameObject pickup)
     {
@@ -92,5 +109,20 @@ public class PlayerHealth : MonoBehaviour
             health = maxArmour;
         }
         CanvasManager.Instance.UpdateArmour(armour);
+    }
+    private void OnTriggerEnter(Collider collision) // a bit jank but it will do for now
+    {
+        if (collision.gameObject.CompareTag("Projectile"))
+        {
+            DamagePlayer(5);
+            Destroy(collision.gameObject);
+        }
+    }
+    public void KillPlayer() // Dying Goes Here
+    {
+        animator.SetBool("isDead", true);
+        mouseLook.enabled = false;
+        playerMovement.enabled = false;
+        CanvasManager.Instance.Death();
     }
 }

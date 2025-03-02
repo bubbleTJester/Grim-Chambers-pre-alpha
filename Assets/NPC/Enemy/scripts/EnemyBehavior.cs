@@ -1,10 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.ProBuilder;
 
-public class EnemyBehavior : MonoBehaviour // this code was made by me (B005561236) for an old portfolio project, I have given full permission for its use by others
+public class EnemyBehavior : MonoBehaviour
 {
+    [SerializeField] List<GameObject> dropTable = new();
+    [SerializeField] SpriteChanger spriteChanger;
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] List<AudioClip> noises = new(); // 0 = hurt, 1 = dead, 2 = attacking, 3 = alert
+    private bool avoidAudioLockout = false; // stops alert sound from overwriting the rest
+
     public float SpawnChance; // there's probably a better solution to choosing the chance for each enemy to spawn like having a class system, but this will do
     public NavMeshAgent agent;
     public GameObject player;
@@ -38,12 +47,18 @@ public class EnemyBehavior : MonoBehaviour // this code was made by me (B0055612
     [Header("CLICK TO TURN OFF ENEMY MOVEMENT")]
     public bool movement;
 
+    [Header("Makes enemy fire a projectile instead of using a raycast")]
+    [SerializeField] private bool isRanged;
+    [SerializeField] private GameObject projectile;
+
     // avoiding spawns within same room as player
     [Header("Start Room Spawn Prevention")]
     [SerializeField] float distanceFromPlayer;
+    private bool dead = false;
+    private TimerManager timerManager;
     private void Awake()
     {
-        
+        timerManager = FindAnyObjectByType<TimerManager>();
         
         agent = GetComponent<NavMeshAgent>();
 
@@ -72,15 +87,27 @@ public class EnemyBehavior : MonoBehaviour // this code was made by me (B0055612
     {
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer); // check for player inside view distance of unit
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer); // check for player inside attack distance of unit
-        if (movement)
+        if (!dead)
         {
-            if (!playerInSightRange && !playerInAttackRange) Patrolling(); // set unit to patrol area
+            if (movement)
+            {
+                if (!playerInSightRange && !playerInAttackRange) Patrolling(); // set unit to patrol area
 
-            if (playerInSightRange && !playerInAttackRange) ChasePlayer(); // set unit to pathfind to player until within attack range
+                if (playerInSightRange && !playerInAttackRange) { ChasePlayer(); avoidAudioLockout = true; } // set unit to pathfind to player until within attack range
+                else
+                {
+                    avoidAudioLockout = false;
+                }
+            }
+            if (playerInAttackRange && playerInSightRange) AttackPlayer(); // set unit to fire at player
+
+            timeout -= 1; // reset patrol if stuck
         }
-        if (playerInAttackRange && playerInSightRange) AttackPlayer(); // set unit to fire at player
-
-        timeout -= 1; // reset patrol if stuck
+        else
+        {
+            agent.SetDestination(transform.position);
+        }
+        
 
     }
 
@@ -102,6 +129,7 @@ public class EnemyBehavior : MonoBehaviour // this code was made by me (B0055612
 
     private void Patrolling()
     {
+            spriteChanger.AnimationState = 0; 
             if (!walkPointSet) SearchWalkPoint();
 
             if (walkPointSet)
@@ -125,6 +153,11 @@ public class EnemyBehavior : MonoBehaviour // this code was made by me (B0055612
 
     private void ChasePlayer()
     {
+        spriteChanger.AnimationState = 0;
+        if (!avoidAudioLockout)
+        {
+            PlayAudio(3);
+        }
         agent.SetDestination(player.transform.position);
     }
 
@@ -136,37 +169,79 @@ public class EnemyBehavior : MonoBehaviour // this code was made by me (B0055612
 
         if (!alreadyAttacked)
         {
+            PlayAudio(2);
             Debug.Log("attacking");
             //Damage player | Should probably do some more checks but this will do until I find a problem with it
-            if (Physics.Raycast(shotPoint.position, player.transform.position - shotPoint.position, out RaycastHit hit, distanceFromPlayer, whatIsPlayer))
+            if (isRanged)
             {
-                Debug.Log("Successful Attack");
-                PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-                playerHealth.DamagePlayer(damage);
+                RangedAttack(); 
+            }
+            else
+            {
+                MeleeAttack();
             }
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
         }
+        
     }
+    private void MeleeAttack()
+    {
+        if (Physics.Raycast(shotPoint.position, player.transform.position - shotPoint.position, out RaycastHit hit, distanceFromPlayer, whatIsPlayer))
+        {
+            Debug.Log("Successful Attack");
+            spriteChanger.AnimationState = 1;
+            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+            playerHealth.DamagePlayer(damage);
+        }
+    }
+    private void RangedAttack()
+    {
+        Rigidbody rb = Instantiate(projectile, shotPoint.position, Quaternion.identity).GetComponent<Rigidbody>();
+        rb.AddForce(transform.forward * 3f, ForceMode.Impulse);
+        alreadyAttacked = true;
+        Invoke(nameof(ResetAttack), timeBetweenAttacks);
+    }
+
+
     private void ResetAttack()
     {
         alreadyAttacked = false;
+        spriteChanger.AnimationState = 0;
     }
 
 
-
+    private void PlayAudio(int noise)
+    {
+        audioSource.clip = noises[noise];
+        audioSource.pitch = Random.Range(0.75f, 1.25f);
+        audioSource.Play();
+    }
 
 
 
     public void TakeDamage(float damage)
     {
-        Instantiate(gunHitEffect, transform.position, Quaternion.identity);
+        if (health > 0)
+        {
+            PlayAudio(0);
+            Instantiate(gunHitEffect, transform.position, Quaternion.identity);
+        }
+        
         health -= damage;
-
+        
         if (health <= 0) // put enemy death stuff here
         {
+            dead = true;
+            if (Random.Range(1, 6) >= 4)
+            {
+                Instantiate(dropTable[Random.Range(0, dropTable.Count)], transform.position, Quaternion.identity);
+            }
+            float addedTime = (float)(Random.Range(3, 5));
+            timerManager.AddTime(addedTime);
+            PlayAudio(1);
             manager.RemoveEnemy(this);
-            Destroy(gameObject);
+            Destroy(gameObject, noises[1].length * ((Time.timeScale < 0.01f) ? 0.01f : Time.timeScale));
         }
     }
 
