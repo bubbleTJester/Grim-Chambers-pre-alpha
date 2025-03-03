@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+// using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Gun : MonoBehaviour
@@ -26,6 +27,10 @@ public class Gun : MonoBehaviour
 
     [SerializeField] LayerMask raycastLayerMask;
     [SerializeField] EnemyManager enemyManager;
+    [SerializeField] CanvasManager canvasManager;
+
+    [SerializeField] List<AudioClip> audioClips = new(); // 0 = gunshot, 1 = pickup, 2 = punch
+    [SerializeField] AudioSource audioSource;
     // Start is called before the first frame update
     void Start()
     {
@@ -39,26 +44,58 @@ public class Gun : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButtonDown(0) && Time.time > nextTimeToFire)
+        if (Time.time > nextTimeToFire)
         {
-            Fire();
+            canvasManager.reloading.SetActive(false);
+            if (Input.GetMouseButtonDown(0))
+            {
+                Fire();
+                
+            } 
         }
+        else
+        {
+            if (StatisticManager.IsFeedback) // REMOVE AFTER STUDY
+            {
+                canvasManager.reloading.SetActive(true);
+            }
+        }
+        
+        
+        
+    }
+    private void PlayAudio(int noise)
+    {
+        if (StatisticManager.IsFeedback) // REMOVE AFTER STUDY
+        {
+            audioSource.clip = audioClips[noise];
+            audioSource.pitch = Random.Range(0.75f, 1.25f);
+            audioSource.Play();
+        }
+
     }
     void Fire() // the goal was to create a doom-like gun that ignores altitude while still taking walls into consideration
     {
         StatisticManager.ShotFired();
 
         // Gun Audio
-
+        // The audio skips the function here because an attack sound isn't feedback, it's basic foley
         if (ammo <= 0)
         {
             gunTrigger.size = new Vector3(2, verticalRange, meleeRange);
             gunTrigger.center = new Vector3(0, 0, meleeRange / 2);
+
+            audioSource.clip = audioClips[2];
+            audioSource.pitch = Random.Range(0.75f, 1.25f);
+            audioSource.Play();
+            // PlayAudio(2);
         }
         else
         {
-            GetComponent<AudioSource>().pitch = Random.Range(0.75f, 1.25f);
-            GetComponent<AudioSource>().Play();
+            audioSource.clip = audioClips[0];
+            audioSource.pitch = Random.Range(0.75f, 1.25f);
+            audioSource.Play();
+            // PlayAudio(0);
 
             gunTrigger.size = new Vector3(1, verticalRange, range);
             gunTrigger.center = new Vector3(0, 0, range / 2);
@@ -124,6 +161,7 @@ public class Gun : MonoBehaviour
         if(ammo < maxAmmo)
         {
             ammo += amount;
+            PlayAudio(1);
             Destroy(pickup);
         }
 

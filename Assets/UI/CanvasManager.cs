@@ -2,9 +2,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using System.Collections;
 
 public class CanvasManager : MonoBehaviour
 {
+    public GameObject reloading;
+    
+    // need to figure out which of these actually need to be public and which ones should just be a serialized field but the game isn't very complicated right now so performance can take the hit for now
     public TextMeshProUGUI health;
     public TextMeshProUGUI armour;
     public TextMeshProUGUI ammo;
@@ -13,6 +17,7 @@ public class CanvasManager : MonoBehaviour
 
     public Image healthIndicator;
     public GameObject blood;
+    public GameObject hurty;
 
     public Sprite health1; // Full
     public Sprite health2; // Half
@@ -33,7 +38,6 @@ public class CanvasManager : MonoBehaviour
             _instance = this;
         }
     }
-
     public void UpdateHealth(int value)
     {
         health.text = value.ToString();
@@ -81,7 +85,7 @@ public class CanvasManager : MonoBehaviour
         
         timer.text = (Math.Round(currentTime, 2)).ToString();
 
-        if (timeAdded)
+        if (timeAdded && StatisticManager.IsFeedback) // REMOVE AFTER STUDY
         {
             TextMeshProUGUI text = Instantiate(timeAdd, timeAdd.transform.position, transform.rotation);
             text.transform.SetParent(gameObject.transform, false);
@@ -89,8 +93,18 @@ public class CanvasManager : MonoBehaviour
 
         }
     }
-
-    internal void Death()
+    public void Hurt()
+    {
+        hurty.GetComponent<Animator>().SetBool("hurt",true);
+        StartCoroutine("Wait");
+        
+    }
+    IEnumerator Wait()
+    {
+        yield return new WaitForSeconds(1);
+        hurty.GetComponent<Animator>().SetBool("hurt", false);
+    }
+    public void Death()
     {
         blood.SetActive(true);
     }

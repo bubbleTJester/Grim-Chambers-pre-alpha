@@ -10,6 +10,12 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] MouseLook mouseLook;
     [SerializeField] Animator animator;
 
+    [Header("Set Audio")]
+    [SerializeField] List<AudioClip> audioClips = new(); // 0 = health, 1 = armour
+    [SerializeField] AudioSource audioSource;
+
+
+    [Header("Set Health And Armour")]
     [SerializeField] int maxHealth;
     private int health;
 
@@ -79,7 +85,23 @@ public class PlayerHealth : MonoBehaviour
         }
         CanvasManager.Instance.UpdateHealth(health);
         CanvasManager.Instance.UpdateArmour(armour);
+
+        if (StatisticManager.IsFeedback)
+        {
+            CanvasManager.Instance.Hurt();
+        }
+        
         StatisticManager.TotalDamageTaken += damage;
+    }
+    private void PlayAudio(int noise)
+    {
+        if (StatisticManager.IsFeedback) // REMOVE AFTER STUDY
+        {
+            audioSource.clip = audioClips[noise];
+            audioSource.pitch = Random.Range(0.75f, 1.25f);
+            audioSource.Play();
+        }
+
     }
     public void GiveHealth(int amount, GameObject pickup)
     {
@@ -94,6 +116,8 @@ public class PlayerHealth : MonoBehaviour
             health = maxHealth;
         }
         CanvasManager.Instance.UpdateHealth(health);
+        PlayAudio(0);
+        
     }
     public void GiveArmour(int amount, GameObject pickup)
     {
@@ -109,6 +133,7 @@ public class PlayerHealth : MonoBehaviour
             health = maxArmour;
         }
         CanvasManager.Instance.UpdateArmour(armour);
+        PlayAudio(1);
     }
     private void OnTriggerEnter(Collider collision) // a bit jank but it will do for now
     {

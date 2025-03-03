@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
+// using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.ProBuilder;
@@ -213,9 +213,13 @@ public class EnemyBehavior : MonoBehaviour
 
     private void PlayAudio(int noise)
     {
-        audioSource.clip = noises[noise];
-        audioSource.pitch = Random.Range(0.75f, 1.25f);
-        audioSource.Play();
+        if (StatisticManager.IsFeedback) // REMOVE AFTER STUDY
+        {
+            audioSource.clip = noises[noise];
+            audioSource.pitch = Random.Range(0.75f, 1.25f);
+            audioSource.Play();
+        }
+        
     }
 
 
