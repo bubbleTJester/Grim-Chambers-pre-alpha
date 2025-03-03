@@ -14,7 +14,7 @@ public static class StatisticManager
 
     public static float TimeOnCompletion {  get; set; }
 
-
+    public static bool IsFeedback { get; set; }
     // all of these stat increases are in functions so that in future additional things can happen when these stats are incremented
     public static void WipeAllStats()
     {
